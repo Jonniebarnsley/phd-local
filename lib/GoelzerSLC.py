@@ -200,9 +200,6 @@ def main(args) -> None:
 
 if __name__ == "__main__":
 
-    # initialise client
-    client = Client()
-
     # Initialize parser
     parser = argparse.ArgumentParser(
         description="Process inputs and optionally select a mask and basin"
