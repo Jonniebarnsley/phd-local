@@ -4,7 +4,7 @@ import xarray as xr
 from pathlib import Path
 from xarray import DataArray
 import local.lib.utils as utils
-
+from dask.distributed import Client
 
 def GoelzerSLC(
         thickness: DataArray, 
@@ -102,7 +102,7 @@ def timeseriesByBasin(da: DataArray, mask: DataArray) -> DataArray:
 
     return outfile
 
-def getEnsembleSLC(thkPath: Path, zbPath: Path, maskPath: Path=None) -> DataArray:
+def getEnsembleSLC(thkPath: Path, zbPath: Path, maskPath: Path=None, parallel: bool=False) -> DataArray:
 
     '''
     Iterates through directories of thickness and Z_base data for different 
@@ -114,10 +114,14 @@ def getEnsembleSLC(thkPath: Path, zbPath: Path, maskPath: Path=None) -> DataArra
         - thkPath:  Path object to thickness directory
         - zbPath:   Path object to Z_base directory
         - maskPath (optional):  Path object to mask netcdf
+        - parallel (optional):  Boolean to indicate whether to use dask for parallel
+                        computation. Default is False.
     output:
         - da:   DataArray of sea level contribution with dimensions time and
                 (optionally) basin.
     '''
+
+    client = Client() if parallel else None
 
     thkFilenames = sorted(thkPath.glob('*.nc'))
     zbFilenames = sorted(zbPath.glob('*.nc'))
@@ -132,11 +136,17 @@ def getEnsembleSLC(thkPath: Path, zbPath: Path, maskPath: Path=None) -> DataArra
     for thkFile, zbFile in zip(thkFilenames, zbFilenames):
         
         print(thkFile.name.ljust(60), zbFile.name)
-        with xr.open_dataset(thkFile) as file:
-            thickness = utils.forceNamingConvention(file).thickness
-        with xr.open_dataset(zbFile) as file:
-            z_base = utils.forceNamingConvention(file).Z_base
-        SLCgrid = GoelzerSLC(thickness, z_base)
+
+        # load datasets, in chunks if parallel computation is selected
+        if parallel:
+            thickness = xr.open_dataset(thkFile, chunks='auto').thickness
+            Z_base = xr.open_dataset(zbFile, chunks='auto').Z_base
+        else:
+            thickness = xr.open_dataset(thkFile).thickness
+            Z_base = xr.open_dataset(zbFile).Z_base
+
+        # calculate sea level contribution using Heiko's method
+        SLCgrid = GoelzerSLC(thickness, Z_base)
 
         # Apply mask if selected
         if maskPath is not None:
@@ -145,8 +155,12 @@ def getEnsembleSLC(thkPath: Path, zbPath: Path, maskPath: Path=None) -> DataArra
             ts = timeseriesByBasin(SLCgrid, mask)
         else:
             ts = SLCgrid.sum(dim=['x', 'y'])
-        
-        timeseries.append(ts)
+
+        timeseries.append(ts.compute())
+
+    # close parallel client if it was used
+    if client:
+        client.close()
 
     # concatenate into a single dataarray for output
     runLabels = range(1, len(timeseries)+1)
@@ -176,7 +190,7 @@ def main(args) -> None:
             'Use --overwrite if you would like to overwrite the file.')
 
     try:
-        da = getEnsembleSLC(thkPath, zbPath, maskPath=maskPath)
+        da = getEnsembleSLC(thkPath, zbPath, maskPath=maskPath, parallel=args.parallel)
     except Exception as e:
         print(f'Error: {e}')
         raise
@@ -185,6 +199,10 @@ def main(args) -> None:
 
 
 if __name__ == "__main__":
+
+    # initialise client
+    client = Client()
+
     # Initialize parser
     parser = argparse.ArgumentParser(
         description="Process inputs and optionally select a mask and basin"
@@ -199,6 +217,8 @@ if __name__ == "__main__":
     parser.add_argument("--mask", type=str, help="Path to basin mask")
     parser.add_argument("--overwrite", action="store_true",
                         help = "Will overwrite outfile if it already exists")
+    parser.add_argument("--parallel", action="store_true",
+                        help = "Use dask to parallelise computation")
 
     args = parser.parse_args()
     main(args)
