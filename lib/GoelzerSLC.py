@@ -4,7 +4,7 @@ import xarray as xr
 from pathlib import Path
 from xarray import DataArray
 import local.lib.utils as utils
-from dask.distributed import Client
+from dask.distributed import Client, LocalCluster, default_client
 
 def GoelzerSLC(
         thickness: DataArray, 
@@ -121,29 +121,37 @@ def getEnsembleSLC(thkPath: Path, zbPath: Path, maskPath: Path=None, parallel: b
                 (optionally) basin.
     '''
 
-    client = Client() if parallel else None
+    # if parallel:
+    #     # if no client exists, create a new one
+    #     cluster = LocalCluster(n_workers=4, threads_per_worker=1)
+    #     client = Client(cluster)
 
-    thkFilenames = sorted(thkPath.glob('*.nc'))
-    zbFilenames = sorted(zbPath.glob('*.nc'))
+    thkFilepaths = sorted(thkPath.glob('*.nc'))
+    zbFilepaths = sorted(zbPath.glob('*.nc'))
 
     # check that the directories contain the same number of run netcdfs
-    if len(thkFilenames) != len(zbFilenames):
+    if len(thkFilepaths) != len(zbFilepaths):
         raise ValueError('Mismatched number of thickness and z_base files in directories')
     
     # initialise list of SLC timeseries for each run
     timeseries = []
     print('Thickness'.ljust(60), 'Z_base')
-    for thkFile, zbFile in zip(thkFilenames, zbFilenames):
+    for thkFilepath, zbFilepath in zip(thkFilepaths, zbFilepaths):
         
-        print(thkFile.name.ljust(60), zbFile.name)
+        print(thkFilepath.name.ljust(60), zbFilepath.name)
 
         # load datasets, in chunks if parallel computation is selected
         if parallel:
-            thickness = xr.open_dataset(thkFile, chunks='auto').thickness
-            Z_base = xr.open_dataset(zbFile, chunks='auto').Z_base
+            thkFile = xr.open_dataset(thkFilepath, chunks='auto')
+            zbFile = xr.open_dataset(zbFilepath, chunks='auto')
         else:
-            thickness = xr.open_dataset(thkFile).thickness
-            Z_base = xr.open_dataset(zbFile).Z_base
+            thkFile = xr.open_dataset(thkFilepath)
+            zbFile = xr.open_dataset(zbFilepath)
+
+        thkFile = utils.forceNamingConvention(thkFile)
+        zbFile = utils.forceNamingConvention(zbFile)
+        thickness = thkFile.thickness
+        Z_base = zbFile.Z_base
 
         # calculate sea level contribution using Heiko's method
         SLCgrid = GoelzerSLC(thickness, Z_base)
@@ -159,8 +167,8 @@ def getEnsembleSLC(thkPath: Path, zbPath: Path, maskPath: Path=None, parallel: b
         timeseries.append(ts.compute())
 
     # close parallel client if it was used
-    if client:
-        client.close()
+    # if parallel:
+    #     client.close()
 
     # concatenate into a single dataarray for output
     runLabels = range(1, len(timeseries)+1)
