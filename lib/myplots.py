@@ -6,9 +6,9 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from itertools import product
-from local.libs.utils import round_sig_figs
+from local.lib.utils import round_sig_figs
 
-def spatialPlot(ax: plt.Axes, da: xr.DataArray, **kwargs) -> None:
+def spatial(ax: plt.Axes, da: xr.DataArray, **kwargs) -> None:
 
     # centre on South Pole
     x = da.x
