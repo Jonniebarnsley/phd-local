@@ -1,9 +1,9 @@
 import os
-import re
 import ssl
 import requests
 from tqdm import tqdm
 from pathlib import Path
+from ssl import SSLContext
 from itertools import product
 from pyesgf.logon import LogonManager
 from pyesgf.search import SearchConnection
@@ -38,10 +38,13 @@ SEARCH_NODE = 'http://esgf-node.ipsl.upmc.fr/esg-search'
 DATA_NODE_PREFERENCE = 'esgf.ceda.ac.uk'
 
 PROJECT = 'CMIP6'
-FREQUENCY = 'mon'
+FREQUENCY = 'mon'   # monthly 
+GRID_LABEL = 'gn'   # gr - regridded to lat-lon, gn - native grid
+
 SCENARIOS = ['historical', 'ssp126', 'ssp585']
 VARIABLES = ['tas', 'pr', 'evspsbl', 'mrro', 'thetao', 'so']
-MODELS = ['UKESM1-0-LL', 'CESM2-WACCM', 'IPSL-CM6A-LR', 'ACCESS-ESM1-5', 'ACCESS-CM2', 'MRI-ESM2-0']
+MODELS = ['UKESM1-0-LL', 'CESM2-WACCM', 'IPSL-CM6A-LR', 'ACCESS-ESM1-5', 'MRI-ESM2-0', \
+          'CanESM5']#, 'CNRM-ESM2-1', 'MIROC-ES2L', 'ACCESS-CM2']
 
 TABLE_ID = {
     'tas': 'Amon',
@@ -52,13 +55,14 @@ TABLE_ID = {
     'so': 'Omon'
 }
 
+
 # UKESM1-0-LL has a different variant label to most models
-VARIANT_LABEL = {model: 'r1i1p1f2' if model == 'UKESM1-0-LL' else 'r1i1p1f1' for model in MODELS}
+VARIANT_LABEL = {model: 'r4i1p1f2' if model == 'UKESM1-0-LL' else 'r1i1p1f1' for model in MODELS}
 
 
 # --- Main ---
 
-def login_to_esgf(username, password, hostname):
+def login_to_esgf(username, password, hostname) -> SSLContext:
 
     '''
     N.B. Login to ESGF can be very temperamental. If you're having issues, try creating an
@@ -102,7 +106,7 @@ def get_local_path(dataset: DatasetResult, data_home: Path) -> Path:
 
     return path
 
-def download_file(file: FileResult, savedir: str):
+def download_file(file: FileResult, savedir: Path) -> None:
 
     '''
     Downloads a single file to a local directory.
@@ -110,7 +114,7 @@ def download_file(file: FileResult, savedir: str):
 
     url = file.download_url
     filename = file.filename
-    filepath = os.path.join(savedir, filename)
+    filepath = savedir / filename
     if os.path.isfile(filepath):
         print(f"File {filename} already exists, skipping download.")
         return
@@ -135,15 +139,19 @@ def download_file(file: FileResult, savedir: str):
                     # Update the progress bar by the size of the chunk written
                     pbar.update(len(chunk)) 
 
-        print(f"Downloaded to {filepath}")
-
     except RequestException as e:
         print(f"Failed to download {file.filename}: {e}")
         if filepath.exists(): # Clean up partial downloads
              os.remove(filepath)
+    
+    except KeyboardInterrupt:
+        print("Download interrupted by user.")
+        if filepath.exists():
+            os.remove(filepath)
+        raise
 
 
-def download_dataset(dataset: DatasetResult):
+def download_dataset(dataset: DatasetResult) -> None:
 
     '''
     Downloads all files in a dataset to a local directory.
@@ -157,7 +165,7 @@ def download_dataset(dataset: DatasetResult):
     for file in files:
         download_file(file, savedir)
 
-def main():
+def main() -> None:
 
     try:
         ssl_context = login_to_esgf(USERNAME, PASSWORD, MYPROXY_HOST)
@@ -171,12 +179,15 @@ def main():
         query = {
             'project': PROJECT,
             'source_id': model,
+            'variant_label': VARIANT_LABEL[model],
             'experiment_id': scenario,
             'variable': variable,
+            'table_id': TABLE_ID[variable],
             'frequency': FREQUENCY,
             'variant_label': VARIANT_LABEL[model],
+            #'version': VERSION[model][scenario],
             'data_node': DATA_NODE_PREFERENCE,
-            'table_id': TABLE_ID[variable]
+            'grid_label': GRID_LABEL,
         }
 
         context = conn.new_context(**query, facets=query.keys())
