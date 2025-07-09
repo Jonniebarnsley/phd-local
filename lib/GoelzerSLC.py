@@ -4,7 +4,8 @@ import xarray as xr
 from pathlib import Path
 from xarray import DataArray
 import local.lib.utils as utils
-from dask.distributed import Client, LocalCluster, default_client
+from dask.distributed import Client, LocalCluster
+from distributed import get_client
 
 def GoelzerSLC(
         thickness: DataArray, 
@@ -196,6 +197,13 @@ def main(args) -> None:
         raise FileExistsError(
             f'{outPath.name} already exists and will not be overwritten by default. '
             'Use --overwrite if you would like to overwrite the file.')
+
+    try:
+        client = get_client()
+    except ValueError:
+        # if no client exists, create a new one
+        cluster = LocalCluster(n_workers=4, threads_per_worker=1)
+        client = Client(cluster)
 
     try:
         da = getEnsembleSLC(thkPath, zbPath, maskPath=maskPath, parallel=args.parallel)
