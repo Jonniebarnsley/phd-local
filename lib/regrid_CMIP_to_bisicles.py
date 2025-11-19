@@ -36,6 +36,21 @@ DATA_HOME = Path(os.environ.get('DATA_HOME', '~/data/')) # mapping files get sav
 BISICLES_FILE = "/Users/jonniebarnsley/code/phd/local/data/bisicles_grid_pole_centered.nc"
 
 class Regridder:
+    """
+    Regridder class to handle regridding of CMIP data onto the BISICLES grid.
+    
+    Regridding requires a number of steps:
+    
+     1. Create a temporary file with a cyclic point added.
+     2. Regrid temporary file onto a South polar stereographic grid.
+     3. Relabel the coordinates to match the BISICLES setup.
+     4. Save the regridded dataset to a specified output file.
+     5. Clean up the temporary and log files created during the process.
+
+    THe regridder class handles all the above whilst saving useful attributes for use across
+    functions - for example, information about the dataset such as model or scenario.
+    """
+
     def __init__(self, infile: Path, method: str = "bilinear", annual_mean: bool = False):
         self.infile = infile
         self.method = method
