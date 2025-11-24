@@ -33,7 +33,7 @@ warnings.filterwarnings("ignore", category=SerializationWarning)
 
 
 DATA_HOME = Path(os.environ.get('DATA_HOME', '~/data/')) # mapping files get saved here
-BISICLES_FILE = "/Users/jonniebarnsley/code/phd/local/data/bisicles_grid_pole_centered.nc"
+BISICLES_FILE = Path("/Users/jonniebarnsley/code/phd/local/data/bisicles_grid_pole_centered.nc")
 
 class Regridder:
     """
@@ -48,19 +48,18 @@ class Regridder:
      5. Clean up the temporary and log files created during the process.
 
     THe regridder class handles all the above whilst saving useful attributes for use across
-    functions - for example, information about the dataset such as model or scenario.
+    functions - for example, a list of temporary files.
     """
 
-    def __init__(self, infile: Path, method: str = "bilinear", annual_mean: bool = False):
-        self.infile = infile
+    def __init__(self, method: str = "bilinear", annual_mean: bool = False):
         self.method = method
         self.calc_annual_mean = annual_mean
+        self.tmp_files = []  # Track all temporary files for cleanup
         self.encoding_specs = {
             'zlib': True,
             'complevel': 4,
             '_FillValue': -9999,
         }
-        self._setup()
 
     def __enter__(self):
         """Context manager entry"""
@@ -70,51 +69,42 @@ class Regridder:
         """Context manager exit - clean up temporary / log files"""
         self.clean_up()
 
-    def _setup(self) -> None:
-        """Initialize regridder by loading metadata and setting up file paths."""
-        if not self.infile.exists():
-            raise FileNotFoundError(f"Input file not found: {self.infile}")
-        
-        # Load dataset attributes
-        with xr.open_dataset(self.infile) as ds:
-            self.attrs = ds.attrs
-        
-        # Validate required attributes
-        required_attrs = ['source_id', 'variable_id']
-        missing = [attr for attr in required_attrs if attr not in self.attrs]
-        if missing:
-            raise ValueError(f"Input file missing required attributes: {missing}")
-
-        # Get filepaths for both the pyremap mapping file and intermediate tmp file
-        self.mapping = self._get_mapping_filepath()
-        self.tmp_file = self._get_tmp_filepath()
-
-    def regrid_CMIP_to_bisicles(self) -> Dataset:
-        """Regrids any 2-D CMIP data from a lat-lon grid and return a dataset on the 
+    def regrid_CMIP_to_bisicles(self, infile: Path) -> Dataset:
+        """Regrids any 2-D CMIP data on a lat-lon grid and return a dataset on the 
         BISICLES 8km-resolution 768x768 South Polar Steregraphic grid"""
+        
         # The easiest way to use pyremap is to have twp netcdfs that are on the source
         # and destination grids. However, some CMIP data requires adding a cyclic point,
         # which changes the native grid. We therefore need to create an intermediate file 
         # with a cyclic point added (if necessary) for pyremap to work from.
-        self._make_tmp_file()
-        if not self.tmp_file.exists():
-            raise FileNotFoundError(f"Temporary file {self.tmp_file} not found.")
+        tmp_filepath = self._make_tmp_file(infile)
 
         # Now regrid onto a 768x768 8km grid with the origin on the South pole.
-        ds = self._regrid(self.tmp_file)
+        ds = self._regrid(tmp_filepath)
         
-        # Finally, redefine grid coordinates such that the origin is in the bottom left corner.
+        # Redefine grid coordinates such that the origin is in the bottom left corner.
         xs, ys = GRID_8KM
         ds = ds.assign_coords(x=xs, y=ys)
+        
+        # Update attributes
+        ds.attrs.update({
+            "grid": "BISICLES 8km (768 x 768) South Polar Stereographic",
+            "grid_label": "8km",
+            "nominal_resolution": "8km"
+        })
         return ds
 
-    def _make_tmp_file(self) -> None:
-        """Makes a temporary intermediate netCDF file from the raw CMIP data"""
-        if self.tmp_file.exists():
-            print(f"Using existing temporary file: {self.tmp_file.name}")
-            return
-        ds = xr.open_dataset(self.infile)
+    def _make_tmp_file(self, infile: Path) -> Path:
+        """Makes a temporary intermediate netCDF file from the raw CMIP data. Returns
+        the path to the temporary file."""
 
+        tmp_filepath = get_tmp_filepath(infile)
+        self.tmp_files.append(tmp_filepath)  # Track for cleanup
+        if tmp_filepath.exists():
+            print(f"Using existing temporary file: {tmp_filepath.name}")
+            return tmp_filepath
+        
+        ds = xr.open_dataset(infile)
         # If the longitude range is less than 360 degrees, add a cyclic point
         lonDim = ds.lon.dims[0]
         lonRange = ds.lon[-1].values - ds.lon[0].values
@@ -125,11 +115,13 @@ class Regridder:
         if self.calc_annual_mean:
             ds = annual_means(ds)
         
-        ds.to_netcdf(self.tmp_file)
+        ds.to_netcdf(tmp_filepath)
+        return tmp_filepath
 
     def _regrid(self, file: Path) -> Dataset:
         """Regrid a lat-lon file and return a dataset on a 768x768 8km South polar 
         stereographic grid with the origin centered over the South pole."""
+
         remapper = self._build_remapper(file, BISICLES_FILE)
         dsIn = xr.open_dataset(file)
         dsIn = dsIn.fillna(0) # Fill NaNs before regridding
@@ -139,6 +131,7 @@ class Regridder:
     def _build_remapper(self, src_grid: Path, dst_grid: Path) -> Remapper:
         """Builds and returns a pyremap Remapper object given a source lat-lon grid and destination 
         South polar stereographic grid."""
+
         # Create the source and destination grid descriptors
         inDescriptor = LatLonGridDescriptor.read(
             str(src_grid),
@@ -152,32 +145,17 @@ class Regridder:
             )
         
         # Create the remapper
+        mapping = get_mapping_filepath(src_grid)
         remapper = Remapper(
-            map_filename=str(self.mapping),
+            map_filename=str(mapping),
             src_descriptor=inDescriptor,
             dst_descriptor=outDescriptor,
             method=self.method
             )
-        if not self.mapping.exists():
+        if not mapping.exists():
+            mapping.parent.mkdir(parents=True, exist_ok=True)
             remapper.build_map()
         return remapper
-    
-    def _get_mapping_filepath(self) -> Path:
-        """Generates filepath for the pyremap mapping file based on the dataset attributes."""
-        # Prepare directory for mapping files
-        mapping_dir = DATA_HOME / "regridding"
-        mapping_dir.mkdir(parents=True, exist_ok=True)
-
-        model = self.attrs['source_id']
-        var = self.attrs['variable_id']
-        return mapping_dir / f"map_{model}_{var}_to_bisicles.nc"
-    
-    def _get_tmp_filepath(self) -> Path:
-        """Generates a temporary file path in the same directory as the input for
-        intermediate data storage."""
-        infile = self.infile.resolve()
-        tmp_filename = "{}_{}".format(infile.stem, "tmp.nc")
-        return infile.parent / tmp_filename
 
     def save(self, ds: Dataset, filepath: Path) -> None:
         """Saves a dataset to a specified filepath with encoding specifications."""
@@ -187,16 +165,38 @@ class Regridder:
         ds.to_netcdf(filepath)
 
     def clean_up(self):
-        """Deletes temporary files created during regridding."""
-        if self.tmp_file.exists():
-            self.tmp_file.unlink()
-        cwd = Path.cwd()
-        log = cwd / "PET0.RegridWeightGen.Log"
+        """Deletes temporary and log files created during regridding."""
+        # Clean up all tracked temporary files
+        for tmp_file in self.tmp_files:
+            if tmp_file.exists():
+                tmp_file.unlink()
+        
+        # Clean up ESMF log file
+        log = Path.cwd() / "PET0.RegridWeightGen.Log"
         if log.exists():
             log.unlink()
 
+# Helper functions
+def get_mapping_filepath(infile: Path) -> Path:
+    """Generates filepath for the pyremap mapping file based on the dataset attributes."""
+
+    mapping_dir = DATA_HOME / "regridding"
+    with xr.open_dataset(infile) as ds:
+        model = ds.attrs['source_id']
+        var = ds.attrs['variable_id']
+    return mapping_dir / f"map_{model}_{var}_to_bisicles.nc"
+
+def get_tmp_filepath(infile: Path) -> Path:
+    """Generates a temporary file path in the same directory as the input for
+    intermediate data storage."""
+
+    infile = infile.resolve()
+    tmp_filename = "{}_{}".format(infile.stem, "tmp.nc")
+    return infile.parent / tmp_filename
+
 def add_cyclic_point(ds: Dataset, lonDim: str) -> Dataset:
     """Add a cyclic point to a dataset along the specified longitude dimension"""
+
     nLon = ds.sizes[lonDim]
     lonIndices = xr.DataArray(np.append(np.arange(nLon), [0]), dims=('newLon',))
     ds.load()
@@ -205,9 +205,19 @@ def add_cyclic_point(ds: Dataset, lonDim: str) -> Dataset:
     return ds
 
 def annual_means(ds: Dataset) -> Dataset:
-    """Calculate annual means from a dataset with a time dimension"""
+    """Calculate annual means from a monthly dataset with dimension 'time'."""
+
     annual = ds.groupby('time.year').mean('time')
     annual = annual.rename({'year': 'time'}) # keep time dimension name consistent
+    table_id = annual.attrs.get('table_id', "")
+    annual.attrs.update({
+        'frequency': 'yr',
+        'table_id': table_id.replace('mon', 'yr')
+        })
+    for var in annual.data_vars:
+        annual[var].attrs.update({'frequency': 'yr'})
+        annual[var].attrs.pop('mipTable', None)
+        annual[var].attrs.pop('prov', None)
     return annual
 
 def build_parser():
@@ -224,10 +234,10 @@ def main():
     parser = build_parser()
     args = parser.parse_args()
     if args.outfile.exists():
-            print(f"{args.outfile} already exists.")
-            return
-    with Regridder(args.infile, method=args.method, annual_mean=args.annual) as rg:
-        ds = rg.regrid_CMIP_to_bisicles()
+        print(f"{args.outfile} already exists.")
+        return
+    with Regridder(method=args.method, annual_mean=args.annual) as rg:
+        ds = rg.regrid_CMIP_to_bisicles(args.infile)
         rg.save(ds, args.outfile)
 
 if __name__ == "__main__":
