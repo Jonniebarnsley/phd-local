@@ -1,66 +1,83 @@
+"""
+Takes surface mass balance data created by preprocess_smb.py and computes the SMB anomaly
+relative to the 1995-2014 climatology. Saves the SMB anomaly to netCDF files, one per year.
+Units are converted from kg m-2 s-1 to m a-1 ice equivalent, ready for input to BISICLES.
+
+Usage: python compute_smb_anomaly.py <historical_file> <scenario_file> <anomaly_dir>
+
+Where:
+    historical_file : path to netCDF file containing historical SMB data
+    scenario_file   : path to netCDF file containing scenario SMB data
+    anomaly_dir     : output directory to save SMB anomaly netCDF files
+
+author: Jonnie
+date: November 2025
+"""
+
 import argparse
 import xarray as xr
 from xarray import DataArray, Dataset
 from pathlib import Path
+
+# Local imports
+from bisicles_defaults import ICE_DENSITY
+
+# Compute SMB anomaly relative to climatology over these years
+CLIM_START = 1995
+CLIM_END = 2014
+
+# Trim dataset to these years (must include climatology period)
+DS_START = 1995
+DS_END = 2300
+
+def make_smb_anomaly(historical: Path, scenario: Path, outdir: Path) -> None:
+    """Computes SMB anomaly from historical and scenario SMB data files and saves to netCDF files."""
     
-
-def climatology(smb: DataArray, start_year: int, end_year: int) -> DataArray:
-    """Computes the climatology of SMB over the specified year range."""
-    return smb.sel(time=slice(start_year, end_year)).mean('time')
-
-def _load_data(scenario_dir: Path, historical_files: Path) -> Dataset:
-    """Loads scenario and historical SMB data from given files."""
-
-    historical_files = sorted(historical_files.glob("*.nc"))
-    if len(historical_files) == 0:
-        raise FileNotFoundError(f"No historical SMB files found in {historical_files}")
-
-    scenario_files = sorted(scenario_dir.glob("*.nc"))
-    if len(scenario_files) == 0:
-        raise FileNotFoundError(f"No scenario SMB files found in {scenario_dir}")
-    
-    return xr.open_mfdataset(historical_files + scenario_files, combine='by_coords')
-
-def make_smb_anomaly(historical_dir: Path, scenario_dir: Path, smb_anomaly_dir: Path) -> None:
-    
-    data = _load_data(scenario_dir, historical_dir)
-    smb = data.smb
-    smb = smb.sel(time=slice(1995, 2300))  # limit to years with full data
+    smb, attrs = _load_smb(historical, scenario)
+    smb = smb.sel(time=slice(DS_START, DS_END)) # cut to desired years
+    smb *= (60*60*24*365) / ICE_DENSITY  # convert from kg m-2 s-1 to m a-1
 
     # Compute climatology and anomaly
     clim = climatology(smb, start_year=1995, end_year=2014)
     smb_anomaly = smb - clim
 
     # Add variable attributes
-    smb_anomaly.attrs['long_name'] = "Surface Mass Balance Anomaly"
-    smb_anomaly.attrs['description'] = "Surface Mass Balance anomaly relative to 1995-2014 climatology"
-    smb_anomaly.attrs['units'] = "m a^-1"
-
+    smb_anomaly.attrs.update({
+        'long_name'     : "Surface Mass Balance Anomaly",
+        'standard_name' : "smb_anomaly",
+        'description'   : "Surface Mass Balance anomaly relative to 1995-2014 climatology",
+        'units'         : "m a-1"
+    })
     smb_anomaly.encoding.update({
         'zlib': True,
         'complevel': 4,
+        'fill_value': -9999,
     })
     
-    # Load all data into memory at once
-    smb_anomaly = smb_anomaly.load()
-    
-    for year in smb_anomaly.time.values:
+    # Save to netCDF files - one for each year
+    filestem = "smb_anomaly_{}_{}_{}".format(
+        attrs['source_id'],
+        attrs['experiment_id'],
+        attrs['grid_label'],
+    )
+    save_smb_by_year(smb_anomaly, filestem, outdir)
 
-        smb_anomaly_file = _get_anomaly_output_dir(scenario_dir) / "{}_{}.nc".format(
-            _get_anomaly_filestem(data),
-            int(year)
-        )
+def save_smb_by_year(smb_anomaly: DataArray, filestem: str, outdir: Path) -> None:
+    """Saves SMB anomaly DataArray to netCDF files, one per year."""
+    smb_anomaly = smb_anomaly.load()
+    for year in smb_anomaly.time.values:
+        smb_anomaly_file = outdir / f"{filestem}_{year}.nc"
         if smb_anomaly_file.exists():
             print(f"    {smb_anomaly_file} already exists.")
             continue
             
         smb_anomaly_yr = smb_anomaly.sel(time=year)
-        ds = xr.Dataset(
+        ds = Dataset(
             {"smb_anomaly": smb_anomaly_yr},
             coords=smb_anomaly_yr.coords,  # Use coords from the slice, not full dataset
-            attrs=data.attrs # copy attributes from original dataset
+            attrs=smb_anomaly.attrs # copy attributes from original dataset
         )
-    
+
         # Save the anomaly data
         print(smb_anomaly_file)
         try:
@@ -69,64 +86,34 @@ def make_smb_anomaly(historical_dir: Path, scenario_dir: Path, smb_anomaly_dir: 
             if smb_anomaly_file.exists():
                 smb_anomaly_file.unlink()  # Remove incomplete file
             print("Process interrupted. Incomplete file removed.")
-            raise
+            return
 
-def _find_data_directories(CMIP6_dir: Path) -> list[Path]:
-    """Finds all scenario and historical SMB data directories under the base directory."""
-    CMIP_dir = CMIP6_dir / "CMIP"
-    for modelling_group in CMIP_dir.iterdir():
-        if not modelling_group.is_dir():
-            continue
+def _load_smb(historical: Path, scenario: Path) -> tuple[DataArray, dict]:
+    """Loads historical and scenario SMB data from the specified files."""
+    with xr.open_dataset(historical) as ds:
+        hist_smb = ds.smb
+    with xr.open_dataset(scenario) as ds:
+        scen_smb = ds.smb
+        attrs = ds.attrs
+    total_smb = xr.concat([hist_smb, scen_smb], dim='time')
+    return total_smb, attrs
 
-        # Look for smb directory for historical experiment
-        # Should be under <model>/historical/<variant>/Lyr/smb/bisicles-8km/<version>/
-        valid_historical_dirs = [d for d in modelling_group.glob("*/historical/*/Lyr/smb/bisicles-8km/*")\
-                                  if d.is_dir()]
-        
-        if len(valid_historical_dirs) == 0:
-            raise FileNotFoundError(f"No historical SMB directory found for {modelling_group.name}")
-        elif len(valid_historical_dirs) > 1:
-            raise ValueError(f"Multiple historical SMB directories found for {modelling_group.name}:"+\
-                             f" {valid_historical_dirs}. Please ensure only one version exists.")
-        else:
-            historical_dir = valid_historical_dirs[0]
-        
-        # Look for equivalent directories for each scenario experiment
-        scenario_modellin_group = CMIP6_dir / "ScenarioMIP" / modelling_group.name
-        scenario_dirs = [d for d in scenario_modellin_group.glob("*/*/*/Lyr/smb/bisicles-8km/*")\
-                               if d.is_dir()]
-        directory_strs = [str(d) for d in scenario_dirs]
-        print("Calculating SMB anomaly for the following scenarios:", "\n".join(directory_strs), sep="\n")
-
-    return historical_dir, scenario_dirs
-
-def _get_anomaly_output_dir(scenario_dir: Path) -> Path:
-    """Generates the output path for the SMB anomaly file based on the scenario directory."""
-    version = scenario_dir.name  # Get the version (last directory in path)
-    anomaly_dir = scenario_dir.parent.parent.parent / "smb_anomaly" / "bisicles-8km" / version
-    anomaly_dir.mkdir(parents=True, exist_ok=True)
-    return anomaly_dir
-
-def _get_anomaly_filestem(anomaly_ds: Path) -> str:
-    """Generates the output file stem for the SMB anomaly dataset."""
-    model = anomaly_ds.attrs['source_id']
-    experiment = anomaly_ds.attrs['experiment_id']
-    smb_anomaly_filename = f"smb_anomaly_{model}_{experiment}_8km"
-    return smb_anomaly_filename
+def climatology(da: DataArray, start_year: int, end_year: int) -> DataArray:
+    """Computes the climatology of SMB over the specified year range."""
+    return da.sel(time=slice(start_year, end_year)).mean('time')
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
-    parser.add_argument("CMIP6", type=Path, help="path to CMIP6 base directory")
+    parser.add_argument("historical_file", type=Path, help="path to historical SMB file")
+    parser.add_argument("scenario_file", type=Path, help="path to scenario SMB file")
+    parser.add_argument("anomaly_dir", type=Path, help="path to output directory for SMB anomalies")
     return parser
 
 def main():
     parser = build_parser()
     args = parser.parse_args()
-
-    historical_dir, scenario_dirs = _find_data_directories(args.CMIP6)
-    for scenario_dir in scenario_dirs:
-        anomaly_dir = _get_anomaly_output_dir(scenario_dir)
-        make_smb_anomaly(historical_dir, scenario_dir, anomaly_dir)
+    args.anomaly_dir.mkdir(parents=True, exist_ok=True)
+    make_smb_anomaly(args.historical_file, args.scenario_file, args.anomaly_dir)
 
 if __name__ == "__main__":
     main()
