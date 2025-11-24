@@ -10,7 +10,8 @@ SMB = pr - evspsbl - mrro
 Usage: python preprocess_smb.py <input_dir1> <input_dir2> ... <output_dir>
 
 Where input directories contain netcdfs with CMIP data for individual variables. This list must
-include (at least) pr, evspsbl, and mrro, but may also include others (e.g., tas) and in any order.
+include (at least) pr, evspsbl, and mrro, but may also include others (e.g., tas). The directories
+can be in any order, but the output directory must be last.
 
 author: Jonnie
 date: November 2025
@@ -56,11 +57,7 @@ def regrid_and_concat(data_dir: Path) -> Dataset:
             regridded = rg.regrid_CMIP_to_bisicles(file)
             ds_list.append(regridded)
     ds = xr.concat(ds_list, dim='time')
-    ds = ds.drop_vars(['time_bnds'], errors='ignore')
-    model = ds.attrs.get('source_id', 'unknown_model')
-    experiment = ds.attrs.get('experiment_id', 'unknown_experiment')
-    variable = ds.attrs.get('variable_id', 'unknown_variable')
-    print(f"Regridded {variable}, {experiment}, {model}")
+    ds = ds.drop_vars(['time_bnds', 'time_bounds', 'lat_bnds', 'lon_bnds'], errors='ignore')
     return ds
 
 def validate_variable_id(data_dir: Path) -> str:
