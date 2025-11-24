@@ -41,7 +41,7 @@ class Regridder:
     
     Regridding requires a number of steps:
     
-     1. Create a temporary file with a cyclic point added.
+     1. Create a temporary file with a cyclic point / pole coordinate added.
      2. Regrid temporary file onto a South polar stereographic grid.
      3. Relabel the coordinates to match the BISICLES setup.
      4. Save the regridded dataset to a specified output file.
@@ -111,6 +111,12 @@ class Regridder:
         if np.abs(lonRange - 360.0) > 1e-10:
             ds = add_cyclic_point(ds, lonDim)
 
+        # If the latitude does not extend to the pole, plug the pole hole
+        latDim = ds.lat.dims[0]
+        minlat = ds[latDim].min().values
+        if minlat > -90.0:
+            ds = plug_pole_hole(ds, latDim)
+
         # If requested, compute annual means
         if self.calc_annual_mean:
             ds = annual_means(ds)
@@ -124,7 +130,9 @@ class Regridder:
 
         remapper = self._build_remapper(file, BISICLES_FILE)
         dsIn = xr.open_dataset(file)
-        dsIn = dsIn.fillna(0) # Fill NaNs before regridding
+        # Fill NaNs in mrro before regridding
+        if "mrro" in dsIn.data_vars:
+            dsIn["mrro"] = dsIn["mrro"].fillna(0)
         dsOut = remapper.remap_numpy(dsIn, renormalization_threshold=0.1)
         return dsOut
  
@@ -194,7 +202,7 @@ def get_tmp_filepath(infile: Path) -> Path:
     tmp_filename = "{}_{}".format(infile.stem, "tmp.nc")
     return infile.parent / tmp_filename
 
-def add_cyclic_point(ds: Dataset, lonDim: str) -> Dataset:
+def add_cyclic_point(ds: Dataset, lonDim: str = 'lon') -> Dataset:
     """Add a cyclic point to a dataset along the specified longitude dimension"""
 
     nLon = ds.sizes[lonDim]
@@ -203,6 +211,18 @@ def add_cyclic_point(ds: Dataset, lonDim: str) -> Dataset:
     ds = ds.isel({lonDim: lonIndices})
     ds = ds.swap_dims({'newLon': lonDim})
     return ds
+
+def plug_pole_hole(ds: Dataset, latDim: str = 'lat') -> Dataset:
+    """Fill in the pole hole in a lat-lon dataset by copying data from the most
+    Southerly row."""
+
+    minlat = ds[latDim].min().values
+    southmost = ds.sel({latDim: minlat}) # Southmost row of data
+    pole = southmost.expand_dims({latDim: [-90.0]}) # copy data to pole
+    ds_with_pole = xr.concat([pole, ds], dim=latDim)
+    ds_with_pole = ds_with_pole.sortby(latDim)
+    ds_with_pole[latDim].attrs = ds[latDim].attrs # copy attributes for pyremap
+    return ds_with_pole
 
 def annual_means(ds: Dataset) -> Dataset:
     """Calculate annual means from a monthly dataset with dimension 'time'."""
