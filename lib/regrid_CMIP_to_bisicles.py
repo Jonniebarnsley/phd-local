@@ -73,10 +73,10 @@ class Regridder:
         """Regrids any 2-D CMIP data on a lat-lon grid and return a dataset on the 
         BISICLES 8km-resolution 768x768 South Polar Steregraphic grid"""
         
-        # The easiest way to use pyremap is to have twp netcdfs that are on the source
-        # and destination grids. However, some CMIP data requires adding a cyclic point,
-        # which changes the native grid. We therefore need to create an intermediate file 
-        # with a cyclic point added (if necessary) for pyremap to work from.
+        # The easiest way to use pyremap is to have two netcdfs that are on the source
+        # and destination grids. However, some CMIP data requires adding a cyclic point
+        # or pole coordinate, which changes the native grid. We therefore need to create 
+        # an intermediate file with these changes made for pyremap to work from.
         tmp_filepath = self._make_tmp_file(infile)
 
         # Now regrid onto a 768x768 8km grid with the origin on the South pole.
