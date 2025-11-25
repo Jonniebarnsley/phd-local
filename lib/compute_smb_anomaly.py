@@ -74,7 +74,7 @@ def save_smb_by_year(smb_anomaly: DataArray, filestem: str, outdir: Path) -> Non
         smb_anomaly_yr = smb_anomaly.sel(time=year)
         ds = Dataset(
             {"smb_anomaly": smb_anomaly_yr},
-            coords=smb_anomaly_yr.coords,  # Use coords from the slice, not full dataset
+            coords=smb_anomaly_yr.coords,
             attrs=smb_anomaly.attrs # copy attributes from original dataset
         )
 
