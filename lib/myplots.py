@@ -6,7 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from itertools import product
-from local.lib.utils import round_sig_figs
+from lib.utils import round_sig_figs
 
 def spatial(ax: plt.Axes, da: xr.DataArray, **kwargs) -> None:
 
