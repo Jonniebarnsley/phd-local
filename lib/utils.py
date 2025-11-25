@@ -1,6 +1,6 @@
 import numpy as np
 from xarray import Dataset, DataArray
-from local.lib.xy2ll import xy2ll
+from lib.xy2ll import xy2ll
 from math import pi
 
 def round_sig_figs(x: float, sig: int=2) -> int | float:
