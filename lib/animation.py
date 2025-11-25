@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from xarray import Dataset, DataArray
 from matplotlib.animation import FuncAnimation, FFMpegWriter
-from local.lib.utils import forceNamingConvention
+#from local.lib.utils import forceNamingConvention
 
 def animate(da: DataArray, **kw) -> FuncAnimation:
 
@@ -23,10 +23,10 @@ def animate(da: DataArray, **kw) -> FuncAnimation:
 
         # plot data
         ax.clear()
-        plot = ax.pcolormesh(data, **kw)
+        im = data.plot(ax=ax, **kw)
         ax.set_title(f'year = {frame}')
 
-        return plot
+        return im
 
     animation = FuncAnimation(
         fig, 
@@ -51,8 +51,8 @@ def main(args) -> None:
         return
 
     ds = xr.open_dataset(netcdf)
-    ds = forceNamingConvention(ds)
-    animation = animate(ds, variable, cmap=cmap)
+    #ds = forceNamingConvention(ds)
+    animation = animate(ds[variable], cmap=cmap)
     writervideo = FFMpegWriter(fps=30, bitrate=5000)
     animation.save(outfile, writer=writervideo, dpi=300)
 
