@@ -90,6 +90,7 @@
 
 \Author[1][jonathan.barnsley@kcl.ac.uk]{Jonathan R}{Barnsley} %% correspondence author
 \Author[1]{Tamsin L}{Edwards}
+\Author[1]{Alex}{Bradley}
 \Author[2]{Stephen L}{Cornford}
 \Author[2]{Matt}{Trevers}
 
@@ -158,31 +159,32 @@ Here, we use the BISICLES ice sheet model to explore inverse problems as a sourc
 
 We project our initial states forward with the CESM2 climate forcing up to 2300 and calculate total Antarctic sea level contribution for each ensemble member (Figure~\ref{fig:ensemble_timeseries}). The ensemble range at 2100 is ??--?? m, which compares well with the IPCC AR6 range of 0.03--0.28 m under SSP5--8.5 (cite IPCC). In the 22nd and 23rd centiries, all ensemble members accelerate their mass loss and the range widens to ??--?? m by 2300.
 
-The spatial patterns of ice thicknes change are broadly similar across the ensemble, with most mass loss occuring in regions of West Antarctica: the Amundsen Sea sector, the Siple coast, and the Weddell sea sector. However, the extent of mass loss in these regions depends on parameter choices, with high variance along Thwaites glacier, Foundations glacier, Denman glacier, and the Siple coast (Figure~\ref{fig:spatial}).
-
-•	This sea level mostly comes from West Antarctica: Amundsen Sea sector, the Siple coast, and Weddell sea sector.
-•	The major ice shelves collapse in all simulations by 2300, but their stability at 2100 is parameter dependent.
- 
- 
-•	Pine island glacier is mostly stable by 2100 but some parameter combinations trigger a collapse by 2300, contributing greatly to sea level rise.
-•	Grounding line retreat in Thwaites and the Siple coast also contribute to sea level rise in some simulations.
-•	The sensitivity of Antarctic SLC to parameters is a time-dependant question. Gamma starts our big very early on, but other parameters such as n and m catch up by 2300.
-•	Glacial isostatic adjustment has negligible effect on SLC by 2100 and only a small effect by 2300.
-•	Sensitivity to bed friction regularisation is negligible at 2100 and still small ~15cm by 2300.
-•	Sensitivity to viscosity coefficient regularisation is the second largest of all parameters by 2100 ~10cm, second only to gamma. By 2300, the parameter also plays a role in the stability of Pine Island. However, the SLC sensitivity still becomes less significant relative to other parameters.
-
-
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/ensemble.png}
 \caption{Timeseries of Antarctic sea level contribution for high and low values of each perturbed parameter.}\label{fig:ensemble_timeseries}
 \end{figure}
 
+The spatial patterns of ice thickness change are broadly similar across the ensemble, with most mass loss occuring in regions of West Antarctica: the Amundsen Sea sector, the Siple coast, and the Weddell sea sector. However, the extent of mass loss in these regions depends on parameter choices, with high variance along Thwaites, Foundations, and Denman glaciers (Figure~\ref{fig:spatial}). Some areas of low variance also show regions that retreat in all ensemble members, including the collapse of Pine Island Glacier and the Ross and Filchner-Ronne ice shelves.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/spatial.png}
 \caption{Timeseries of Antarctic sea level contribution for high and low values of each perturbed parameter.}\label{fig:spatial}
 \end{figure}
+
+For each parameter, we calculate the range in sea level contribution between minimum and maximum values (Figure~\ref{fig:sensitivity}). This provides a rudimentary measure of sensitivity, which we can compare across parameters and timescales. At 2100, the largest sensitivity is to ice shelf basal melt, \gamma. 
+
+
+•	The sensitivity of Antarctic SLC to parameters is a time-dependant question. Gamma starts our big very early on, but other parameters such as n and m catch up by 2300.
+•	Glacial isostatic adjustment has negligible effect on SLC by 2100 and only a small effect by 2300.
+•	Sensitivity to bed friction regularisation is negligible at 2100 and still small ~15cm by 2300.
+•	Sensitivity to viscosity coefficient regularisation is the second largest of all parameters by 2100 ~10cm, second only to gamma. By 2300, the parameter also plays a role in the stability of Pine Island. However, the SLC sensitivity still becomes less significant relative to other parameters.
+
+
+
+
+
 
 
 \section{Discussion}
