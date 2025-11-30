@@ -168,12 +168,25 @@ We project our initial states forward with the CESM2 climate forcing up to 2300 
 The spatial patterns of ice thickness change are broadly similar across the ensemble, with most mass loss occuring in regions of West Antarctica: the Amundsen Sea sector, the Siple coast, and the Weddell sea sector. However, the extent of mass loss in these regions depends on parameter choices, with high variance along Thwaites, Foundations, and Denman glaciers (Figure~\ref{fig:spatial}). Some areas of low variance also show regions that retreat in all ensemble members, including the collapse of Pine Island Glacier and the Ross and Filchner-Ronne ice shelves.
 
 \begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{figures/spatial.png}
-\caption{Timeseries of Antarctic sea level contribution for high and low values of each perturbed parameter.}\label{fig:spatial}
+    \centering
+    \includegraphics[width=\linewidth]{figures/spatial.png}
+    \caption{Timeseries of Antarctic sea level contribution for high and low values of each perturbed parameter.}\label{fig:spatial}
 \end{figure}
 
-For each parameter, we calculate the range in sea level contribution between minimum and maximum values (Figure~\ref{fig:sensitivity}). This provides a rudimentary measure of sensitivity, which we can compare across parameters and timescales. At 2100, the largest sensitivity is to ice shelf basal melt, \gamma. 
+For each parameter, we calculate the range in sea level contribution between ensemble members with minimal and maximal values of that parameter. This provides a rudimentary measure of sensitivity, which we can compare across parameters. Figure~\ref{fig:sensitivity} highlights the timescale-dependance of this sensitivity, with different relative importance of parameters at 2100 and 2300.
+
+At 2100, the largest sensitivity is to ice shelf basal melt, $\gamma$, but this reduces in relative terms by 2300 as other parameters become more important. Sensitivity to the flow law exponent, $n$, and the basal sliding exponent, $m$, both increase over time and are comparable to $\gamma$ by 2300. Sensitivities to glacial isostatic adjustment ($UMV$) and bed friction regularisation ($a_C$) are negligible at 2100 and remain small by 2300. Sensitivity to regularisation of the viscosity coefficient, $a_{\phi}$, is the second largest of all parameters by 2100 but becomes less significant relative to other parameters by 2300.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figures/sensitivity.png}
+    \caption{Sensitivity of Antarctic sea level contribution to each perturbed parameter at (a) 2100 and (b) 2300. Arrows denote the range in sea level contribution between ensemble members with minimal and maximal values of that parameter, pointing from minimal to maximal. Arrows pointing upwards/downwards therefore indicate a parameter that increases/decreases sea level contribution with higher values. The dashed horizontal line indicates the sea level contribution in a simulation with all parameters held at their default value (see Table~\ref{table}).}\label{fig:sensitivity}
+\end{figure}
+
+\section{Discussion}
+
+Although the sensitivity to one of the inversion parameters is high at 2100, the overall sensitivity to inversion choices is otherwise lower than other commonly perturbed parameters, particularly on longer timescales. 
+
 
 
 •	The sensitivity of Antarctic SLC to parameters is a time-dependant question. Gamma starts our big very early on, but other parameters such as n and m catch up by 2300.
@@ -187,7 +200,7 @@ For each parameter, we calculate the range in sea level contribution between min
 
 
 
-\section{Discussion}
+
 
 
 
