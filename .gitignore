@@ -5,3 +5,9 @@ __init__.py
 .vscode
 test*
 __pycache__
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+README_copernicus_package_7_12.txt
