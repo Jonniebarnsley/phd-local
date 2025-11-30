@@ -30,7 +30,7 @@ CLIM_END = 2014
 DS_START = 1995
 DS_END = 2300
 
-def make_smb_anomaly(historical: Path, scenario: Path, outdir: Path) -> None:
+def make_smb_anomaly(historical: Path, scenario: Path, anomaly_dir: Path) -> None:
     """Computes SMB anomaly from historical and scenario SMB data files and saves to netCDF files."""
     
     smb, attrs = _load_smb(historical, scenario)
@@ -60,6 +60,8 @@ def make_smb_anomaly(historical: Path, scenario: Path, outdir: Path) -> None:
         attrs['experiment_id'],
         attrs['grid_label'],
     )
+    outdir = anomaly_dir / attrs['experiment_id'] / attrs['source_id']
+    outdir.mkdir(parents=True, exist_ok=True)
     save_smb_by_year(smb_anomaly, filestem, outdir)
 
 def save_smb_by_year(smb_anomaly: DataArray, filestem: str, outdir: Path) -> None:
