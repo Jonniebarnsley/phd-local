@@ -107,7 +107,7 @@
 
 
 
-\runningtitle{Sensitivity of Antarctic sea level contribution to bed friction inversion choices in the BISICLES ice sheet model}
+\runningtitle{Sensitivity of Antarctic sea level contribution to initialisation choices in the BISICLES ice sheet model}
 
 \runningauthor{Barnsley et al.}
 
@@ -133,11 +133,11 @@
 \begin{abstract}
 Antarctica is the largest potential contributor to future sea level but is also the most uncertain. The ice sheet initial state is known to be a significant source of uncertainty, but this uncertainty is rarely explored outside of large-scale model intercomparison projects.
 
-Century-scale projections of the Antarctic ice sheet typically generate an initial state by solving an inverse problem for basal friction – and sometimes other fields – such that modelled ice velocities closely match observations. While this yields realistic short-term behaviour, it may also overfit by masking deficiencies elsewhere in the model.
+Century-scale projections of the Antarctic ice sheet typically generate an initial state by solving an inverse problem for basal friction --- and sometimes other fields --- such that modelled ice velocities closely match observations. While this yields realistic short-term behaviour, it may also overfit by masking deficiencies elsewhere in the model.
 
 Few modelling studies explicitly treat the inverse problem itself as a source of uncertainty. There is some evidence that regularisation choices within the inversion can produce uncertainty comparable to other commonly perturbed ice sheet model parameters, though this is limited to select experimental setups. It is unknown whether these results translate to other ice sheet models or domains.
 
-Here, we use the BISICLES ice sheet model to explore inverse problems as a source of uncertainty in Antarctica’s future sea level contribution. We generate an ensemble of initial states and project them forward to 2300 under a high-emission scenario. We assess the sensitivity of sea level projections to regularisation parameters within the inversion and compare it against other commonly perturbed parameters. We find that the sensitivity to regularisation in BISICLES is generally lower than other parameters and that this gap widens on longer timescales.
+Here, we use the BISICLES ice sheet model to explore inverse problems as a source of uncertainty in Antarctica's future sea level contribution. We generate an ensemble of initial states and project them forward to 2300 under a high-emission scenario. We assess the sensitivity of sea level projections to regularisation parameters within the inversion and compare it against other commonly perturbed parameters. We find that the sensitivity to regularisation in BISICLES is generally lower than other parameters and that this gap widens on longer timescales.
 \end{abstract}
 
 
@@ -150,7 +150,8 @@ Here, we use the BISICLES ice sheet model to explore inverse problems as a sourc
 
 \section{Methods}
 
-\subsection{Ice sheet model}
+\subsection{BISICLES ice sheet model}
+
 \subsection{Inversion method}
 \subsection{Experimental design}
 \subsection{Climate forcing}
@@ -160,9 +161,9 @@ Here, we use the BISICLES ice sheet model to explore inverse problems as a sourc
 We project our initial states forward with the CESM2 climate forcing up to 2300 and calculate total Antarctic sea level contribution for each ensemble member (Figure~\ref{fig:ensemble_timeseries}). The ensemble range at 2100 is ??--?? m, which compares well with the IPCC AR6 range of 0.03--0.28 m under SSP5--8.5 (cite IPCC). In the 22nd and 23rd centiries, all ensemble members accelerate their mass loss and the range widens to ??--?? m by 2300.
 
 \begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{figures/ensemble.png}
-\caption{Timeseries of Antarctic sea level contribution for high and low values of each perturbed parameter.}\label{fig:ensemble_timeseries}
+    \centering
+    \includegraphics[width=\linewidth]{figures/ensemble.png}
+    \caption{Timeseries of Antarctic sea level contribution for high and low values of each perturbed parameter.}\label{fig:ensemble_timeseries}
 \end{figure}
 
 The spatial patterns of ice thickness change are broadly similar across the ensemble, with most mass loss occuring in regions of West Antarctica: the Amundsen Sea sector, the Siple coast, and the Weddell sea sector. However, the extent of mass loss in these regions depends on parameter choices, with high variance along Thwaites, Foundations, and Denman glaciers (Figure~\ref{fig:spatial}). Some areas of low variance also show regions that retreat in all ensemble members, including the collapse of Pine Island Glacier and the Ross and Filchner-Ronne ice shelves.
@@ -185,27 +186,20 @@ At 2100, the largest sensitivity is to ice shelf basal melt, $\gamma$, but this 
 
 \section{Discussion}
 
-Although the sensitivity to one of the inversion parameters is high at 2100, the overall sensitivity to inversion choices is otherwise lower than other commonly perturbed parameters, particularly on longer timescales. 
+The most direct comparison for our results is with (cite Rosier), who simulate the Amundsen Sea Embayment (ASE) up to 2100 using the Ùa ice sheet model. Inversions in Ùa are similar to those in BISICLES, using the adjoint method to solve for basal friction and the rate factor, which is analogous to the viscosity coefficient in BISICLES insofar as it controls ice rheology. Similar to Rosier et al., we find that regularisation parameters in the initialisation can be a significant source of uncertainty in century-scale sea level projections. However, there are some notable differences between our results.
 
+Both studies agree that sensitivity to `rheology-related' regularisation (rate factor in Ùa, viscosity coefficient in BISICLES) is higher than sensitivity to bed friction regularisation. In BISICLES, the viscosity coefficient plays a critical role in dynamics near to the present-day grounding line, which are highly influential in short-term sea level projections. However, we find that this sensitivity decreases on longer timescales, possibly because the ice sheet retreats past present-day grounding lines into regions where the viscosity coefficient is mostly uniform.
 
+Basal friction plays a role throughout the ice sheet and particularly in the ice streams, which may explain why sensitivity to its regularisation increases relative to rheology-related regularisation on longer timescales. However, sensitivity to bed friction regularisation in BISICLES is much lower than in Ùa when compared against other commonly perturbed parameters. This may be due to differences in the domain and resolution of the models. The inclusion of slow-moving parts of East Antarctica in our simulations introduces very high friction values that may dominate the Tikhonov penalty function, focusing the smoothing on areas of Antarctica that are less dynamically important to century-scale sea level projections. BISICLES is also known to be sensitive to grid resolution up to at least 500 m (cite steph 2016), and our 1 km resolution may be too coarse to fully capture the influence of bed friction regularisation on ice dynamics.
 
-•	The sensitivity of Antarctic SLC to parameters is a time-dependant question. Gamma starts our big very early on, but other parameters such as n and m catch up by 2300.
-•	Glacial isostatic adjustment has negligible effect on SLC by 2100 and only a small effect by 2300.
-•	Sensitivity to bed friction regularisation is negligible at 2100 and still small ~15cm by 2300.
-•	Sensitivity to viscosity coefficient regularisation is the second largest of all parameters by 2100 ~10cm, second only to gamma. By 2300, the parameter also plays a role in the stability of Pine Island. However, the SLC sensitivity still becomes less significant relative to other parameters.
-
-
-
-
-
-
-
-
-
-
+The timescale dependance of our results highlight the importance of considering the projection period and forcing when assessing sources of uncertainty. Because of the very high CESM2-WACCM forcing post-2100, the major ice shelves collapse in all ensemble members before 2300, which reduces sensitivity to ice shelf basal melt relative to other parameters on this timescale. Similarly, the collapse of Pine Island Glacier in all ensemble members affects the sensitivity of our outputs to key parameters in that region, which could include bed friction regularisation. If we had used a less extreme forcing --- either a lower-emission scenario or a different climate model --- we may have found different patterns of sensitivity. Rosier et al find that parameters generally have higher sensitivity in a high-emissions scenario compared to a low-emissions scenario, but that this pattern is often reversed for initialisation parameters, supporting this idea.
 
 \conclusions  %% \conclusions[modified heading if necessary]
 
+•	The sensitivity of Antarctic SLC to regularisation parameters may be dependent on the model, forcing, timescale, domain, and resolution used in the experiment. 
+•	Results are likely to also vary with the type of regularisation and gradient descent used in the inverse problem (sort of included in ‘model’).
+•	‘Initial state uncertainty’ as seen in initMIP is still much larger than what we have explored here, which makes sense because it covers multiple initialisation techniques.
+•	Using range as a measure of sensitivity is less preferable to something such as Sobol’ sensitivity. However, these quick tests provide a basis to then go on and do larger PPEs.
 
 %% The following commands are for the statements about the availability of data sets and/or software code corresponding to the manuscript.
 %% It is strongly recommended to make use of these sections in case data sets and/or software code have been part of your research the article is based on.
