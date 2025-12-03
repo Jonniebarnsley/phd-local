@@ -1,0 +1,33 @@
+\begin{thebibliography}{8}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{https://doi.org/\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{https://doi.org/\discretionary{}{}{}\begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{Cornford et~al.(2013)Cornford, Martin, Graves, Ranken, Le~Brocq, Gladstone, Payne, Ng, and Lipscomb}]{cornfordAdaptiveMeshFinite2013}
+Cornford, S.~L., Martin, D.~F., Graves, D.~T., Ranken, D.~F., Le~Brocq, A.~M., Gladstone, R.~M., Payne, A.~J., Ng, E.~G., and Lipscomb, W.~H.: Adaptive Mesh, Finite Volume Modeling of Marine Ice Sheets, Journal of Computational Physics, 232, 529--549, \doi{10.1016/j.jcp.2012.08.037}, 2013.
+
+\bibitem[{Cornford et~al.(2015)Cornford, Martin, Payne, Ng, Le~Brocq, Gladstone, Edwards, Shannon, Agosta, {van den Broeke}, Hellmer, Krinner, Ligtenberg, Timmermann, and Vaughan}]{cornfordCenturyscaleSimulationsResponse2015}
+Cornford, S.~L., Martin, D.~F., Payne, A.~J., Ng, E.~G., Le~Brocq, A.~M., Gladstone, R.~M., Edwards, T.~L., Shannon, S.~R., Agosta, C., {van den Broeke}, M.~R., Hellmer, H.~H., Krinner, G., Ligtenberg, S. R.~M., Timmermann, R., and Vaughan, D.~G.: Century-Scale Simulations of the Response of the {{West Antarctic Ice Sheet}} to a Warming Climate, The Cryosphere, 9, 1579--1600, \doi{10.5194/tc-9-1579-2015}, 2015.
+
+\bibitem[{Cornford et~al.(2016)Cornford, Martin, Lee, Payne, and Ng}]{cornfordAdaptiveMeshRefinement2016a}
+Cornford, S.~L., Martin, D.~F., Lee, V., Payne, A.~J., and Ng, E.~G.: Adaptive Mesh Refinement versus Subgrid Friction Interpolation in Simulations of {{Antarctic}} Ice Dynamics, Annals of Glaciology, 57, 1--9, \doi{10.1017/aog.2016.13}, 2016.
+
+\bibitem[{Cuffey and Paterson(2010)}]{cuffeyPhysicsGlaciers2010}
+Cuffey, K.~M. and Paterson, W. S.~B.: The Physics of Glaciers, Elsevier, San Diego, fourth edition edn., ISBN 978-0-12-369461-4 978-0-08-091912-6, 2010.
+
+\bibitem[{O'Neill et~al.(2025)O'Neill, Edwards, Martin, Shafer, Cornford, Seroussi, Nowicki, Adhikari, and Gregoire}]{oneillISMIP6basedAntarcticProjections2025a}
+O'Neill, J.~F., Edwards, T.~L., Martin, D.~F., Shafer, C., Cornford, S.~L., Seroussi, H.~L., Nowicki, S., Adhikari, M., and Gregoire, L.~J.: {{ISMIP6-based Antarctic}} Projections to 2100: Simulations with the {{BISICLES}} Ice Sheet Model, The Cryosphere, 19, 541--563, \doi{10.5194/tc-19-541-2025}, 2025.
+
+\bibitem[{Schoof and Hindmarsh(2010)}]{schoofThinFilmFlowsWall2010}
+Schoof, C. and Hindmarsh, R. C.~A.: Thin-{{Film Flows}} with {{Wall Slip}}: {{An Asymptotic Analysis}} of {{Higher Order Glacier Flow Models}}, The Quarterly Journal of Mechanics and Applied Mathematics, 63, 73--114, \doi{10.1093/qjmam/hbp025}, 2010.
+
+\bibitem[{Siahaan et~al.(2022)Siahaan, Smith, Holland, Jenkins, Gregory, Lee, Mathiot, Payne, Ridley, and Jones}]{siahaanAntarcticContribution21stcentury2022}
+Siahaan, A., Smith, R.~S., Holland, P.~R., Jenkins, A., Gregory, J.~M., Lee, V., Mathiot, P., Payne, A.~J., Ridley, J.~K., and Jones, C.~G.: The {{Antarctic}} Contribution to 21st-Century Sea-Level Rise Predicted by the {{UK Earth System Model}} with an Interactive Ice Sheet, The Cryosphere, 16, 4053--4086, \doi{10.5194/tc-16-4053-2022}, 2022.
+
+\bibitem[{Tsai et~al.(2015)Tsai, Stewart, and Thompson}]{tsaiMarineIcesheetProfiles2015}
+Tsai, V.~C., Stewart, A.~L., and Thompson, A.~F.: Marine Ice-Sheet Profiles and Stability under {{Coulomb}} Basal Conditions, Journal of Glaciology, 61, 205--215, \doi{10.3189/2015JoG14J221}, 2015.
+
+\end{thebibliography}

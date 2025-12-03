@@ -152,7 +152,30 @@ Here, we use the BISICLES ice sheet model to explore inverse problems as a sourc
 
 \subsection{BISICLES ice sheet model}
 
-\subsection{Inversion method}
+BISICLES \citep{cornfordAdaptiveMeshFinite2013} is an adaptive mesh, vertically integrated ice sheet model, which has been used extensively for century-scale modelling of the Antarctic ice sheet \citep{cornfordCenturyscaleSimulationsResponse2015, siahaanAntarcticContribution21stcentury2022,oneillISMIP6basedAntarcticProjections2025a}. It uses the L1L2 approximation \citep{schoofThinFilmFlowsWall2010}, which solves a 2-D stress balance equation with a vertically integrated effective viscosity, defined as:
+\begin{equation}
+    \phi h \bar{\mu}(x, y) = \phi \int_{s-h}^{s} \mu(x, y, z) dz,
+\end{equation}
+
+where $h$ is ice thickness, $s$ is surface elevation, and $\phi$ is a spatially-varying coefficient that incorporates unresolved physics such as macroscopic damage or crystalline anisotropy. $\mu(x, y, z)$ is calculated using Glen's flow law:
+\begin{equation}
+    \mu(x, y, z) = \frac{1}{2 A \tau^{n-1}},
+\end{equation}
+
+where $A$ is a Paterson rate factor \citep{cuffeyPhysicsGlaciers2010}, $\tau$ is the deviatoric stress tensor, and the flow law exponent $n$ is a perturbed parameter in the ensemble. We run BISICLES with 24 vertical layers and a base horizontal resolution of 8 km, refined up to 1 km at the grounding line or in regions of fast-flowing ice. This refinement is important for accurately capturing century-scale grounding line dynamics \citep{cornfordAdaptiveMeshRefinement2016a}.
+
+Basal drag is calculated using a pressure-limited Weertman-Coulomb sliding law derived from \citet{tsaiMarineIcesheetProfiles2015}:
+\begin{equation}
+    \tau_b = - \min \left\{ C |\mathbf{u}|^m, \frac{1}{2} N \right\} \frac{\mathbf{u}}{|\mathbf{u}|},
+\end{equation}
+
+where $C$ is a spatially-varying basal friction coefficient, $\mathbf{u}$ is the vertically integrated velocity, and $N$ is the local hydrostatic pressure. The friction exponent $m$ is a perturbed parameter in the ensemble.
+
+
+
+\subsection{BISICLES inverse problem}
+
+
 \subsection{Experimental design}
 \subsection{Climate forcing}
 
@@ -260,22 +283,22 @@ TEXT
 
 %% The reference list is compiled as follows:
 
-\begin{thebibliography}{}
+% \begin{thebibliography}{}
 
-\bibitem[AUTHOR(YEAR)]{LABEL1}
-REFERENCE 1
+% \bibitem[AUTHOR(YEAR)]{LABEL1}
+% REFERENCE 1
 
-\bibitem[AUTHOR(YEAR)]{LABEL2}
-REFERENCE 2
+% \bibitem[AUTHOR(YEAR)]{LABEL2}
+% REFERENCE 2
 
-\end{thebibliography}
+% \end{thebibliography}
 
 %% Since the Copernicus LaTeX package includes the BibTeX style file copernicus.bst,
 %% authors experienced with BibTeX only have to include the following two lines:
-%%
-%% \bibliographystyle{copernicus}
-%% \bibliography{example.bib}
-%%
+
+\bibliographystyle{copernicus}
+\bibliography{references}
+
 %% URLs and DOIs can be entered in your BibTeX file as:
 %%
 %% URL = {http://www.xyz.org/~jones/idx_g.htm}
