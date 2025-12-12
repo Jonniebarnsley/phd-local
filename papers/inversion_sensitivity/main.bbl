@@ -1,10 +1,19 @@
-\begin{thebibliography}{8}
+\begin{thebibliography}{20}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\urlprefix}{}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{https://doi.org/\discretionary{}{}{}#1}\else
   \providecommand{\doi}{https://doi.org/\discretionary{}{}{}\begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{Agosta et~al.(2019)Agosta, Amory, Kittel, Orsi, Favier, Gall{\'e}e, Van Den~Broeke, Lenaerts, Van~Wessem, Van De~Berg, and Fettweis}]{agostaEstimationAntarcticSurface2019a}
+Agosta, C., Amory, C., Kittel, C., Orsi, A., Favier, V., Gall{\'e}e, H., Van Den~Broeke, M.~R., Lenaerts, J. T.~M., Van~Wessem, J.~M., Van De~Berg, W.~J., and Fettweis, X.: Estimation of the {{Antarctic}} Surface Mass Balance Using the Regional Climate Model {{MAR}} (1979--2015) and Identification of Dominant Processes, The Cryosphere, 13, 281--296, \doi{10.5194/tc-13-281-2019}, 2019.
+
+\bibitem[{Barnes and Gudmundsson(2022)}]{barnesPredictivePowerIce2022}
+Barnes, J.~M. and Gudmundsson, G.~H.: The Predictive Power of Ice Sheet Models and the Regional Sensitivity of Ice Loss to Basal Sliding Parameterisations: A Case Study of {{Pine Island}} and {{Thwaites}} Glaciers, {{West Antarctica}}, The Cryosphere, 16, 4291--4304, \doi{10.5194/tc-16-4291-2022}, 2022.
+
+\bibitem[{Bevan et~al.(2023)Bevan, Cornford, Gilbert, Otosaka, Martin, and {Surawy-Stepney}}]{bevanAmundsenSeaEmbayment2023}
+Bevan, S., Cornford, S., Gilbert, L., Otosaka, I., Martin, D., and {Surawy-Stepney}, T.: Amundsen {{Sea Embayment}} Ice-Sheet Mass-Loss Predictions to 2050 Calibrated Using Observations of Velocity and Elevation Change, Journal of Glaciology, 69, 1729--1739, \doi{10.1017/jog.2023.57}, 2023.
 
 \bibitem[{Cornford et~al.(2013)Cornford, Martin, Graves, Ranken, Le~Brocq, Gladstone, Payne, Ng, and Lipscomb}]{cornfordAdaptiveMeshFinite2013}
 Cornford, S.~L., Martin, D.~F., Graves, D.~T., Ranken, D.~F., Le~Brocq, A.~M., Gladstone, R.~M., Payne, A.~J., Ng, E.~G., and Lipscomb, W.~H.: Adaptive Mesh, Finite Volume Modeling of Marine Ice Sheets, Journal of Computational Physics, 232, 529--549, \doi{10.1016/j.jcp.2012.08.037}, 2013.
@@ -18,16 +27,43 @@ Cornford, S.~L., Martin, D.~F., Lee, V., Payne, A.~J., and Ng, E.~G.: Adaptive M
 \bibitem[{Cuffey and Paterson(2010)}]{cuffeyPhysicsGlaciers2010}
 Cuffey, K.~M. and Paterson, W. S.~B.: The Physics of Glaciers, Elsevier, San Diego, fourth edition edn., ISBN 978-0-12-369461-4 978-0-08-091912-6, 2010.
 
+\bibitem[{Glen(1955)}]{glenCreepPolycrystallineIce1955}
+Glen, J.~W.: The Creep of Polycrystalline Ice, Proceedings of the Royal Society of London. Series A. Mathematical and Physical Sciences, 228, 519--538, \doi{10.1098/rspa.1955.0066}, 1955.
+
+\bibitem[{Morlighem(2020)}]{morlighemMEaSUREsBedMachineAntarctica2020}
+Morlighem, M.: {{MEaSUREs BedMachine Antarctica}}, {{Version}} 2, \doi{10.5067/E1QL9HFQ7A8M}, 2020.
+
+\bibitem[{Nias et~al.(2016)Nias, Cornford, and Payne}]{niasContrastingModelledSensitivity2016}
+Nias, I.~J., Cornford, S.~L., and Payne, A.~J.: Contrasting the Modelled Sensitivity of the {{Amundsen Sea Embayment}} Ice Streams, Journal of Glaciology, 62, 552--562, \doi{10.1017/jog.2016.40}, 2016.
+
 \bibitem[{O'Neill et~al.(2025)O'Neill, Edwards, Martin, Shafer, Cornford, Seroussi, Nowicki, Adhikari, and Gregoire}]{oneillISMIP6basedAntarcticProjections2025a}
 O'Neill, J.~F., Edwards, T.~L., Martin, D.~F., Shafer, C., Cornford, S.~L., Seroussi, H.~L., Nowicki, S., Adhikari, M., and Gregoire, L.~J.: {{ISMIP6-based Antarctic}} Projections to 2100: Simulations with the {{BISICLES}} Ice Sheet Model, The Cryosphere, 19, 541--563, \doi{10.5194/tc-19-541-2025}, 2025.
+
+\bibitem[{Rignot et~al.(2017)Rignot, Mouginot, and Scheuchl}]{rignotMEaSUREsInSARBasedAntarctica2017}
+Rignot, E., Mouginot, J., and Scheuchl, B.: {{MEaSUREs InSAR-Based Antarctica Ice Velocity Map}}, {{Version}} 2, \doi{10.5067/D7GK8F5J8M8R}, 2017.
+
+\bibitem[{Rosier et~al.(2025)Rosier, Gudmundsson, Jenkins, and Naughten}]{rosierCalibratedSeaLevel2025b}
+Rosier, S. H.~R., Gudmundsson, G.~H., Jenkins, A., and Naughten, K.~A.: Calibrated Sea Level Contribution from the {{Amundsen Sea}} Sector, {{West Antarctica}}, under {{RCP8}}.5 and {{Paris 2C}} Scenarios, The Cryosphere, 19, 2527--2557, \doi{10.5194/tc-19-2527-2025}, 2025.
 
 \bibitem[{Schoof and Hindmarsh(2010)}]{schoofThinFilmFlowsWall2010}
 Schoof, C. and Hindmarsh, R. C.~A.: Thin-{{Film Flows}} with {{Wall Slip}}: {{An Asymptotic Analysis}} of {{Higher Order Glacier Flow Models}}, The Quarterly Journal of Mechanics and Applied Mathematics, 63, 73--114, \doi{10.1093/qjmam/hbp025}, 2010.
 
+\bibitem[{Shewchuk(1994)}]{10.5555/865018}
+Shewchuk, J.~R.: An Introduction to the Conjugate Gradient Method without the Agonizing Pain, Tech. rep., Carnegie Mellon University, USA, 1994.
+
 \bibitem[{Siahaan et~al.(2022)Siahaan, Smith, Holland, Jenkins, Gregory, Lee, Mathiot, Payne, Ridley, and Jones}]{siahaanAntarcticContribution21stcentury2022}
 Siahaan, A., Smith, R.~S., Holland, P.~R., Jenkins, A., Gregory, J.~M., Lee, V., Mathiot, P., Payne, A.~J., Ridley, J.~K., and Jones, C.~G.: The {{Antarctic}} Contribution to 21st-Century Sea-Level Rise Predicted by the {{UK Earth System Model}} with an Interactive Ice Sheet, The Cryosphere, 16, 4053--4086, \doi{10.5194/tc-16-4053-2022}, 2022.
 
+\bibitem[{Smith et~al.(2020)Smith, Fricker, Gardner, Medley, Nilsson, Paolo, Holschuh, Adusumilli, Brunt, Csatho, Harbeck, Markus, Neumann, Siegfried, and Zwally}]{smithPervasiveIceSheet2020}
+Smith, B., Fricker, H.~A., Gardner, A.~S., Medley, B., Nilsson, J., Paolo, F.~S., Holschuh, N., Adusumilli, S., Brunt, K., Csatho, B., Harbeck, K., Markus, T., Neumann, T., Siegfried, M.~R., and Zwally, H.~J.: Pervasive Ice Sheet Mass Loss Reflects Competing Ocean and Atmosphere Processes, Science, 368, 1239--1242, \doi{10.1126/science.aaz5845}, 2020.
+
+\bibitem[{Trevers et~al.(2024)Trevers, Cornford, Payne, Gasson, and Bevan}]{treversRetreatThwaitesGlacier2024}
+Trevers, M., Cornford, S.~L., Payne, A.~J., Gasson, E., and Bevan, S.~L.: Retreat of {{Thwaites Glacier Triggered}} by Its {{Neighbours}}, \doi{10.22541/essoar.170957499.97583808/v1}, 2024.
+
 \bibitem[{Tsai et~al.(2015)Tsai, Stewart, and Thompson}]{tsaiMarineIcesheetProfiles2015}
 Tsai, V.~C., Stewart, A.~L., and Thompson, A.~F.: Marine Ice-Sheet Profiles and Stability under {{Coulomb}} Basal Conditions, Journal of Glaciology, 61, 205--215, \doi{10.3189/2015JoG14J221}, 2015.
+
+\bibitem[{Wolovick et~al.(2023)Wolovick, Humbert, Kleiner, and R{\"u}ckamp}]{wolovickRegularizationLcurvesIce2023a}
+Wolovick, M., Humbert, A., Kleiner, T., and R{\"u}ckamp, M.: Regularization and {{L-curves}} in Ice Sheet Inverse Models: A Case Study in the {{Filchner}}--{{Ronne}} Catchment, The Cryosphere, 17, 5027--5060, \doi{10.5194/tc-17-5027-2023}, 2023.
 
 \end{thebibliography}
