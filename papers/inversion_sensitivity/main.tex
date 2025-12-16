@@ -146,6 +146,25 @@ Here, we use the BISICLES ice sheet model to explore inverse problems as a sourc
 
 \introduction  %% \introduction[modified heading if necessary]
 
+•	Antarctica is a big potential source of future sea level rise. \\
+•	There is a lot of uncertainty about how much Antarctica will contribute to sea level rise in the future. \\
+•	We want to account for as many sources of uncertainty as possible when projecting future Antarctic mass loss because the upper ranges of sea level rise are important for climate adaptation policy. \\
+•	Normally, when people investigate uncertainty in ice sheet models, they do so by changing aspects of the model in the forward run, e.g. parameters, sliding laws. Usually only spatially homogeneous parameters are perturbed, or else a scaling factor is applied to spatially inhomogeneous parameter fields. \\
+•	InitMIP shows that there is also a lot of uncertainty coming from the initial state, particularly if you allow different types of initialisation method. However, smaller-scale modelling studies usually only pick one initialisation method and often only one initial state because it’s a lot of work / compute to produce multiple. \\
+•	The most common type of initialisation method for century-scale projections is an inversion. \\
+•	Inversions give you a good initial state with very sensible looking Antarctic ice dynamics in the first few decades. However, they also have a propensity to overfit by plastering over structural deficiencies in the model such as e.g. the approximation to Stokes. \\
+•	They also are often underdetermined, meaning they have more parameters than data. This means that there isn’t a unique solution to an inverse problem, and other equally plausible solutions could yield different future sea level outcomes. \\
+•	Finally, inverse problems, when ran for long enough, will allow short-wavelength variations to creep into the solution. This may be on length scales over which we do not expect properties at the bed to vary so significantly but is instead another form of overfitting. Models use a variety of methods to regularise the solution to counter this effect. \\
+•	The extent to which one chooses to regularise is often determined by heuristics such as the L-curve, which is a visual representation of overfitting vs underfitting in the inversion (cite Wolovick). However, L-curves are somewhat subjective. \\
+•	Treating regularisation as an uncertain parameter may be a way into exploring uncertainty in ice sheet initialisation which only requires one initialisation method. It also allows us to explore uncertainty in the spatial distribution of parameters rather than just spatially homogeneous parameters.
+•	Rosier et al. perturbed regularisation parameters in the Ua ice sheet model and found that sea level contribution from the ASE under low and high RCPs was very sensitive to them. \\
+•	However, every model does inversions in a different way. E.g. Ua has other parameters in the inversion that penalise (something to do with the) initial state (I forget). \\
+•	Furthermore, their results may not hold outside of the ASE or for different resolutions of the inverted fields. For high-level sea level projections, we are mostly interested in whole-Antarctic change at a coarser resolution. \\
+•	BISICLES can do whole-Antarctic simulations with impressive resolution near the grounding line and ice streams due to its adaptive mesh, although not as fine resolution as the Rosier et al. ASE Uà setup. \\
+•	BISICLES inverts using similar methods to Ua, but with some different parameters. Therefore, it is a good comparison to use to try to reproduce Rosier et al results but on an Antarctic scale. \\
+•	If regularisation parameters are shown to be a significant source of uncertainty in another model, it would become a priority for other models to produce ensembles of initial states and include this uncertainty in future sea level projections. \\
+
+
 \section{Methods}
 \subsection{BISICLES ice sheet model}
 
@@ -268,10 +287,10 @@ The timescale dependance of our results highlight the importance of considering 
 
 \conclusions  %% \conclusions[modified heading if necessary]
 
-•	The sensitivity of Antarctic SLC to regularisation parameters may be dependent on the model, forcing, timescale, domain, and resolution used in the experiment. 
-•	Results are likely to also vary with the type of regularisation and gradient descent used in the inverse problem (sort of included in ‘model’).
-•	‘Initial state uncertainty’ as seen in initMIP is still much larger than what we have explored here, which makes sense because it covers multiple initialisation techniques.
-•	Using range as a measure of sensitivity is less preferable to something such as Sobol’ sensitivity. However, these quick tests provide a basis to then go on and do larger PPEs.
+•	The sensitivity of Antarctic SLC to regularisation parameters may be dependent on the model, forcing, timescale, domain, and resolution used in the experiment. \\
+•	Results are likely to also vary with the type of regularisation and gradient descent used in the inverse problem (sort of included in ‘model’). \\
+•	‘Initial state uncertainty’ as seen in initMIP is still much larger than what we have explored here, which makes sense because it covers multiple initialisation techniques. \\
+•	Using range as a measure of sensitivity is less preferable to something such as Sobol’ sensitivity. However, these quick tests provide a basis to then go on and do larger PPEs. \\
 
 %% The following commands are for the statements about the availability of data sets and/or software code corresponding to the manuscript.
 %% It is strongly recommended to make use of these sections in case data sets and/or software code have been part of your research the article is based on.
