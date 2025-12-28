@@ -23,7 +23,7 @@ def animate(da: DataArray, **kw) -> FuncAnimation:
 
         # plot data
         ax.clear()
-        im = data.plot(ax=ax, **kw)
+        im = ax.pcolormesh(data, **kw)
         ax.set_title(f'year = {frame}')
 
         return im
