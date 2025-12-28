@@ -37,7 +37,7 @@ from pathlib import Path
 from xarray import DataArray, Dataset
 from scipy.ndimage import gaussian_filter
 
-from bisicles_defaults import X8KM, Y8KM
+from bisicles_defaults import GRID_8KM
 
 MAR = "/Users/jonniebarnsley/data/MAR/antarctica.mon-SMB-MAR_ERA5-1980-2021.mean.smb.nc"
 DHDT_OBS = "/Users/jonniebarnsley/data/ICESat2/dhdt/ais_dhdt_grounded_filt_bisicles_8km.nc"
@@ -116,9 +116,10 @@ def generate_synthetic_smb(input: Path, output: Path, overwrite: bool = False):
     smb = smooth_smb(smb, sigma=4)
 
     # Save to output file
+    xs, ys = GRID_8KM
     da = DataArray(
         smb,
-        coords={'x': X8KM, 'y': Y8KM},
+        coords={'x': xs, 'y': ys},
         dims=['y', 'x']
     )
     ds = Dataset({'smb_synthetic': da})
