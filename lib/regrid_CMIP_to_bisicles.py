@@ -192,7 +192,7 @@ def get_mapping_filepath(infile: Path) -> Path:
     with xr.open_dataset(infile) as ds:
         model = ds.attrs['source_id']
         var = ds.attrs['variable_id']
-    return mapping_dir / f"map_{model}_{var}_to_bisicles.nc"
+    return mapping_dir / f"map_{model}_to_bisicles.nc"
 
 def get_tmp_filepath(infile: Path) -> Path:
     """Generates a temporary file path in the same directory as the input for

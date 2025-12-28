@@ -55,10 +55,9 @@ def make_smb_anomaly(historical: Path, scenario: Path, anomaly_dir: Path) -> Non
     })
     
     # Save to netCDF files - one for each year
-    filestem = "smb_anomaly_{}_{}_{}".format(
+    filestem = "smb_anomaly_{}_{}".format(
         attrs['source_id'],
-        attrs['experiment_id'],
-        attrs['grid_label'],
+        attrs['experiment_id']
     )
     outdir = anomaly_dir / attrs['experiment_id'] / attrs['source_id']
     outdir.mkdir(parents=True, exist_ok=True)
