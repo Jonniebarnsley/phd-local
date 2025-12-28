@@ -11,3 +11,4 @@ __pycache__
 *.log
 *.synctex.gz
 README_copernicus_package_7_12.txt
+*.synctex(busy)
