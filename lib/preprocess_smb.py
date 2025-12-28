@@ -21,6 +21,7 @@ import argparse
 import xarray as xr
 from xarray import Dataset
 from pathlib import Path
+from dask.diagnostics import ProgressBar
 
 # local imports
 from regrid_CMIP_to_bisicles import Regridder
@@ -102,7 +103,9 @@ def save_smb(ds: Dataset, output_dir: Path) -> None:
 
     nc_path = nc_dir / f"smb_{model}_{experiment}_8km.nc"
     print(f"Saving SMB dataset to {nc_path}")
-    ds.to_netcdf(nc_path)
+    ds = ds.chunk({'x': 768, 'y': 768, 'time': 1})  # Chunk for efficient writing
+    with ProgressBar():
+        ds.to_netcdf(nc_path)
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
