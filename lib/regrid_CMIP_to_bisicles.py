@@ -191,7 +191,6 @@ def get_mapping_filepath(infile: Path) -> Path:
     mapping_dir = DATA_HOME / "regridding"
     with xr.open_dataset(infile) as ds:
         model = ds.attrs['source_id']
-        var = ds.attrs['variable_id']
     return mapping_dir / f"map_{model}_to_bisicles.nc"
 
 def get_tmp_filepath(infile: Path) -> Path:
